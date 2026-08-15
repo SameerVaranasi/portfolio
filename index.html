@@ -8,26 +8,36 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --bg: #0a0a0a;
-    --bg-raised: #101010;
-    --line: #232323;
-    --line-soft: #1a1a1a;
-    --ink: #f4f4f2;
-    --ink-dim: #8b8b8b;
-    --ink-faint: #4a4a4a;
-    --accent: #3d6bff;
-    --accent-dim: #1e3585;
-    --node: #2a3a6b;
+    --bg: #f5f6f8;
+    --bg-raised: #ffffff;
+    --bg-raised-2: #edf1fb;
+    --line: #e2e5eb;
+    --line-soft: #ecedf1;
+    --ink: #14161c;
+    --ink-dim: #5a5f6b;
+    --ink-faint: #9a9fac;
+    --accent: #3457e6;
+    --accent-soft: rgba(52,87,230,.07);
+    --accent-dim: #c4cffb;
+    --good: #158a4a;
+    --good-bg: #e6f6ec;
+    --warn: #a4680a;
+    --warn-bg: #fbf1de;
+    --purple: #7c3aed;
+    --purple-bg: #f2ecfe;
+    --cyan: #0f7fb0;
+    --cyan-bg: #e6f4fa;
 
-    --display: 'Archivo', sans-serif;
-    --mono: 'JetBrains Mono', monospace;
+    --display: 'Sora', sans-serif;
+    --mono: 'Space Mono', monospace;
     --body: 'Inter', sans-serif;
 
     --edge: clamp(20px, 5vw, 64px);
+    --persp: 1600px;
   }
 
   *{ margin:0; padding:0; box-sizing:border-box; }
@@ -38,409 +48,260 @@
     font-family:var(--body);
     overflow-x:hidden;
     cursor:default;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(52,87,230,.06), transparent 45%),
+      radial-gradient(circle at 88% 26%, rgba(52,87,230,.045), transparent 50%);
   }
   ::selection{ background:var(--accent); color:#fff; }
-
   a{ color:inherit; text-decoration:none; }
   button{ font-family:inherit; cursor:pointer; }
-
   .wrap{ max-width:1440px; margin:0 auto; padding:0 var(--edge); }
 
-  /* ---------- scroll reveal ---------- */
-  .reveal{ opacity:0; transform:translateY(28px); transition:opacity .9s cubic-bezier(.16,.84,.44,1), transform .9s cubic-bezier(.16,.84,.44,1); }
-  .reveal.in{ opacity:1; transform:translateY(0); }
-  .reveal-delay-1{ transition-delay:.08s; }
-  .reveal-delay-2{ transition-delay:.16s; }
-  .reveal-delay-3{ transition-delay:.24s; }
+  /* ---------- cursor spotlight (spatial cue: ambient light following the pointer) ---------- */
+  .spotlight{
+    position:fixed; inset:0; z-index:5; pointer-events:none; mix-blend-mode:multiply;
+    background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%), rgba(52,87,230,.07), transparent 70%);
+    transition:opacity .3s;
+  }
+  @media (hover:none){ .spotlight{ display:none; } }
 
   /* ---------- header ---------- */
   header{
     position:fixed; top:0; left:0; right:0; z-index:100;
     display:flex; align-items:center; justify-content:space-between;
-    padding:22px var(--edge);
-    mix-blend-mode:difference;
+    padding:18px var(--edge);
+    background:rgba(245,246,248,.72);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
   }
   .brand{ display:flex; align-items:center; gap:12px; }
-  .brand svg{ width:30px; height:30px; }
-  .brand span{
-    font-family:var(--mono); font-size:13px; letter-spacing:.14em; font-weight:500; color:var(--ink);
-  }
-  .head-right{ display:flex; align-items:center; gap:28px; }
-  .clock{ font-family:var(--mono); font-size:12px; letter-spacing:.1em; color:var(--ink-dim); }
-  .menu-btn{
-    background:none; border:none; width:26px; height:16px; position:relative;
-  }
-  .menu-btn span{
-    position:absolute; left:0; right:0; height:1px; background:var(--ink);
-  }
+  .brand svg{ width:28px; height:28px; }
+  .brand span{ font-family:var(--mono); font-size:12.5px; letter-spacing:.14em; font-weight:700; color:var(--ink); }
+  .head-right{ display:flex; align-items:center; gap:26px; }
+  .clock{ font-family:var(--mono); font-size:11.5px; letter-spacing:.08em; color:var(--ink-dim); }
+  .menu-btn{ background:none; border:none; width:26px; height:16px; position:relative; }
+  .menu-btn span{ position:absolute; left:0; right:0; height:1.5px; background:var(--ink); }
   .menu-btn span:nth-child(1){ top:0; }
   .menu-btn span:nth-child(2){ top:7px; width:70%; }
   .menu-btn span:nth-child(3){ top:14px; }
 
-  /* ---------- side tab ---------- */
   .side-tab{
     position:fixed; right:0; top:50%; transform:translateY(-50%);
-    background:var(--ink); color:#0a0a0a;
+    background:var(--ink); color:#fff;
     padding:22px 10px; z-index:90;
-    font-family:var(--mono); font-size:11px; letter-spacing:.12em;
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.12em;
     writing-mode:vertical-rl; text-orientation:mixed;
     display:flex; align-items:center; gap:14px;
+    border-radius:10px 0 0 10px;
   }
-  .side-tab::before{
-    content:''; width:6px; height:6px; border-radius:50%; background:var(--accent);
+  .side-tab::before{ content:''; width:6px; height:6px; border-radius:50%; background:#7ea1ff; }
+
+  /* ---------- floor grid (signature bg element) ---------- */
+  .floor{ position:absolute; inset:0; z-index:0; pointer-events:none; perspective:600px; overflow:hidden; }
+  .floor-plane{
+    position:absolute; left:-50%; right:-50%; bottom:-10%; height:70%;
+    background-image:
+      linear-gradient(rgba(52,87,230,.14) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(52,87,230,.14) 1px, transparent 1px);
+    background-size:64px 64px;
+    transform:rotateX(78deg);
+    mask-image:linear-gradient(to top, rgba(0,0,0,.85), transparent);
+    -webkit-mask-image:linear-gradient(to top, rgba(0,0,0,.85), transparent);
   }
 
-  /* ---------- hero ---------- */
-  .hero{
-    min-height:100vh; position:relative; display:flex; flex-direction:column; justify-content:center;
-    padding-top:120px; padding-bottom:60px; overflow:hidden;
-  }
-  #graph-canvas{ position:absolute; inset:0; z-index:0; opacity:.55; }
-  .hero-inner{ position:relative; z-index:2; }
-  .eyebrow{
-    font-family:var(--mono); font-size:12px; letter-spacing:.18em; color:var(--accent);
-    text-transform:uppercase; margin-bottom:22px; display:flex; align-items:center; gap:10px;
-  }
-  .eyebrow::before{ content:''; width:22px; height:1px; background:var(--accent); }
+  /* ---------- SCENE / BENTO SYSTEM ---------- */
+  .scene{ perspective:var(--persp); }
+  .bento{ display:grid; grid-template-columns:repeat(12, 1fr); gap:16px; transform-style:preserve-3d; }
+  .span-12{ grid-column:span 12; }
+  .span-8{ grid-column:span 8; }
+  .span-7{ grid-column:span 7; }
+  .span-6{ grid-column:span 6; }
+  .span-5{ grid-column:span 5; }
+  .span-4{ grid-column:span 4; }
+  .span-3{ grid-column:span 3; }
 
-  .hero h1{
-    font-family:var(--display); font-weight:900; text-transform:uppercase;
-    font-size:clamp(38px, 8vw, 108px); line-height:.96; letter-spacing:-.01em;
-  }
-  .hero h1 .line{ display:block; overflow:hidden; }
-  .hero h1 .line span{ display:block; }
-  .hero h1 .accent-word{ color:var(--accent); }
+  .card-slot{ transform-style:preserve-3d; animation:doorCardIn .9s cubic-bezier(.16,.84,.44,1) both; }
+  .card-slot.float{ animation:doorCardIn .9s cubic-bezier(.16,.84,.44,1) both, drift 7s ease-in-out infinite; }
+  .bento > .card-slot:nth-child(even){ animation-name:doorCardInAlt, drift; }
+  @keyframes doorCardIn{ from{ opacity:0; transform:perspective(1000px) rotateY(20deg) translateX(56px) translateZ(-60px); } to{ opacity:1; transform:perspective(1000px) rotateY(0) translateX(0) translateZ(0); } }
+  @keyframes doorCardInAlt{ from{ opacity:0; transform:perspective(1000px) rotateY(-20deg) translateX(-56px) translateZ(-60px); } to{ opacity:1; transform:perspective(1000px) rotateY(0) translateX(0) translateZ(0); } }
+  @keyframes drift{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-7px); } }
 
-  .hero-sub{
-    margin-top:34px; max-width:620px; color:var(--ink-dim);
-    font-size:15px; line-height:1.7; font-family:var(--mono); letter-spacing:.01em;
+  /* ---------- glass doors: section reveal, sliding open in 3D as you scroll ---------- */
+  .door-wrap{ position:relative; }
+  .section-door{
+    position:absolute; top:0; bottom:0; width:50%; z-index:60; pointer-events:none;
+    background:linear-gradient(135deg, rgba(255,255,255,.98), rgba(230,236,251,.95));
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    transform-style:preserve-3d;
+    transition:transform 1.15s cubic-bezier(.16,.84,.44,1), opacity 1.15s ease .1s;
   }
+  .section-door::before{
+    content:''; position:absolute; inset:0;
+    background-image:linear-gradient(rgba(52,87,230,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(52,87,230,.09) 1px, transparent 1px);
+    background-size:40px 40px;
+  }
+  .section-door::after{ content:''; position:absolute; top:0; bottom:0; width:2px; background:linear-gradient(var(--accent-dim), transparent 80%); }
+  .section-door.left{ left:0; transform-origin:left center; transform:perspective(1400px) rotateY(0) translateX(0); }
+  .section-door.left::after{ right:0; }
+  .section-door.right{ right:0; transform-origin:right center; transform:perspective(1400px) rotateY(0) translateX(0); }
+  .section-door.right::after{ left:0; }
+  .door-wrap.open .section-door.left{ transform:perspective(1400px) rotateY(-26deg) translateX(-104%); opacity:0; }
+  .door-wrap.open .section-door.right{ transform:perspective(1400px) rotateY(26deg) translateX(104%); opacity:0; }
+  @media (prefers-reduced-motion: reduce){ .section-door{ display:none; } }
 
-  .hero-cta{ display:flex; gap:14px; margin-top:44px; flex-wrap:wrap; }
-  .btn{
-    font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase;
-    padding:15px 26px; border-radius:100px; display:inline-flex; align-items:center; gap:10px;
-    transition:transform .35s cubic-bezier(.16,.84,.44,1), background .3s, border-color .3s;
+  .card{
+    position:relative; height:100%;
+    background:rgba(255,255,255,.86);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:30px;
+    transform-style:preserve-3d;
+    box-shadow:0 20px 44px -26px rgba(20,30,70,.18), 0 2px 8px -2px rgba(20,30,70,.06);
+    transition:transform .12s ease-out, box-shadow .3s ease, border-color .3s ease;
+    will-change:transform;
   }
-  .btn-fill{ background:var(--accent); color:#fff; border:1px solid var(--accent); }
-  .btn-fill:hover{ transform:translateY(-3px); background:#527dff; }
-  .btn-line{ border:1px solid var(--line); color:var(--ink); }
-  .btn-line:hover{ transform:translateY(-3px); border-color:var(--ink-dim); }
+  .card:hover{
+    border-color:var(--accent-dim);
+    box-shadow:0 34px 60px -24px rgba(52,87,230,.20), 0 10px 20px -10px rgba(20,30,70,.10);
+  }
+  .card::after{
+    content:''; position:absolute; inset:0; border-radius:18px; pointer-events:none;
+    background:linear-gradient(140deg, rgba(255,255,255,.5), transparent 40%);
+    opacity:0; transition:opacity .3s;
+  }
+  .card:hover::after{ opacity:1; }
+  .card > *{ transform:translateZ(24px); }
 
-  .scroll-cue{
-    position:absolute; bottom:36px; left:var(--edge); z-index:2;
-    display:flex; align-items:center; gap:10px; font-family:var(--mono);
-    font-size:11px; letter-spacing:.1em; color:var(--ink-faint);
-  }
-  .scroll-cue .bar{ width:1px; height:38px; background:linear-gradient(var(--ink-faint), transparent); position:relative; overflow:hidden; }
-  .scroll-cue .bar::after{
-    content:''; position:absolute; top:-100%; left:0; right:0; height:100%; background:var(--accent);
-    animation:scrollmove 2.2s ease-in-out infinite;
-  }
-  @keyframes scrollmove{ 0%{top:-100%;} 60%{top:100%;} 100%{top:100%;} }
+  .card-accent{ background:rgba(237,241,251,.9); border-color:var(--accent-dim); }
+  .card-flat{ background:transparent; border:1px dashed var(--line); box-shadow:none; backdrop-filter:none; }
+
+  .kicker{ font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; color:var(--accent); text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .kicker::before{ content:''; width:16px; height:1px; background:var(--accent); }
 
   /* ---------- section basics ---------- */
   section{ position:relative; }
-  .section-pad{ padding:120px 0; }
-  .divider{ border-top:1px solid var(--line); }
+  .section-pad{ padding:100px 0; }
+  .split-title{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:16px; padding:0 var(--edge) 44px; }
+  .split-title h2{ font-family:var(--display); font-weight:800; text-transform:uppercase; font-size:clamp(28px,4.6vw,54px); line-height:1.02; letter-spacing:-.01em; }
+  .split-title .tag{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); letter-spacing:.1em; }
 
-  /* ---------- stats ---------- */
-  .stats{
-    display:grid; grid-template-columns:1fr 1fr; gap:0;
-  }
-  .stat{
-    padding:70px var(--edge); border-right:1px solid var(--line);
-  }
-  .stat:last-child{ border-right:none; }
-  .stat .num{
-    font-family:var(--display); font-weight:900; font-size:clamp(56px,7vw,120px);
-    line-height:1; color:var(--ink); letter-spacing:-.02em;
-  }
-  .stat .num .accent{ color:var(--accent); }
-  .stat h3{
-    font-family:var(--mono); font-size:13px; letter-spacing:.1em; text-transform:uppercase;
-    margin-top:20px; color:var(--ink);
-  }
-  .stat p{ margin-top:12px; color:var(--ink-dim); font-size:14px; line-height:1.7; max-width:340px; }
+  .bento-outer{ padding:0 var(--edge); }
 
-  @media (max-width:760px){
-    .stats{ grid-template-columns:1fr; }
-    .stat{ border-right:none; border-bottom:1px solid var(--line); }
-  }
+  /* ---------- hero ---------- */
+  .hero{ min-height:100vh; position:relative; display:flex; flex-direction:column; justify-content:center; padding-top:120px; padding-bottom:60px; overflow:hidden; }
+  .hero-inner{ position:relative; z-index:2; }
+  .eyebrow{ font-family:var(--mono); font-size:11.5px; letter-spacing:.16em; color:var(--accent); text-transform:uppercase; margin-bottom:22px; display:flex; align-items:center; gap:10px; }
+  .eyebrow::before{ content:''; width:22px; height:1px; background:var(--accent); }
+  .hero h1{ font-family:var(--display); font-weight:800; text-transform:uppercase; font-size:clamp(34px, 6.8vw, 92px); line-height:1; letter-spacing:-.01em; color:var(--ink); }
+  .hero h1 .accent-word{ color:var(--accent); }
+  .hero-sub{ margin-top:28px; max-width:580px; color:var(--ink-dim); font-size:14.5px; line-height:1.75; font-family:var(--mono); letter-spacing:.01em; }
+  .hero-cta{ display:flex; gap:14px; margin-top:38px; flex-wrap:wrap; }
+  .btn{ font-family:var(--mono); font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; padding:15px 26px; border-radius:100px; display:inline-flex; align-items:center; gap:10px; transition:box-shadow .3s, background .3s, border-color .3s; }
+  .btn-fill{ background:var(--accent); color:#fff; border:1px solid var(--accent); box-shadow:0 10px 24px -10px rgba(52,87,230,.5); }
+  .btn-fill:hover{ background:#4569f5; box-shadow:0 14px 30px -8px rgba(52,87,230,.6); }
+  .btn-line{ border:1px solid var(--line); color:var(--ink); background:rgba(255,255,255,.6); }
+  .btn-line:hover{ border-color:var(--ink-faint); }
 
-  /* ---------- section head ---------- */
-  .split-title{
-    display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:16px;
-    padding:70px var(--edge) 50px;
+  /* floating stat chips over hero */
+  .hero-chips{ position:relative; z-index:2; margin-top:64px; display:flex; gap:16px; flex-wrap:wrap; }
+  .chip{
+    background:rgba(255,255,255,.86); backdrop-filter:blur(10px); border:1px solid var(--line); border-radius:14px;
+    padding:16px 22px; display:flex; align-items:center; gap:14px;
+    transform-style:preserve-3d; box-shadow:0 16px 34px -20px rgba(20,30,70,.2);
+    animation:drift 6s ease-in-out infinite;
   }
-  .split-title h2{
-    font-family:var(--display); font-weight:900; text-transform:uppercase;
-    font-size:clamp(34px,6vw,72px); line-height:1; letter-spacing:-.01em;
-  }
-  .split-title .tag{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); letter-spacing:.1em; }
+  .chip:nth-child(2){ animation-delay:.6s; }
+  .chip .num{ font-family:var(--display); font-weight:800; font-size:26px; color:var(--accent); }
+  .chip .lbl{ font-family:var(--mono); font-size:10px; letter-spacing:.07em; color:var(--ink-dim); text-transform:uppercase; max-width:120px; line-height:1.5; }
 
-  /* ---------- about me section (CALL ME KARTHIKEYA) ---------- */
-  .about-content{
-    padding:0 var(--edge) 80px;
-  }
-  .about-badge{
-    display:inline-block; font-family:var(--mono); font-size:12px; letter-spacing:.1em;
-    color:var(--accent); border:1px solid var(--accent-dim); padding:6px 14px; border-radius:100px;
-    margin-bottom:28px; text-transform:uppercase;
-  }
-  .about-text{
-    max-width:840px; font-size:16px; line-height:1.85; color:var(--ink-dim); font-weight:400;
-  }
-  .about-text p{ margin-bottom:24px; }
+  .scroll-cue{ position:absolute; bottom:36px; left:var(--edge); z-index:2; display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; color:var(--ink-faint); }
+  .scroll-cue .bar{ width:1px; height:38px; background:linear-gradient(var(--ink-faint), transparent); position:relative; overflow:hidden; }
+  .scroll-cue .bar::after{ content:''; position:absolute; top:-100%; left:0; right:0; height:100%; background:var(--accent); animation:scrollmove 2.2s ease-in-out infinite; }
+  @keyframes scrollmove{ 0%{top:-100%;} 60%{top:100%;} 100%{top:100%;} }
+
+  /* ---------- about ---------- */
+  .about-text p{ color:var(--ink-dim); font-size:14px; line-height:1.8; margin-bottom:16px; }
   .about-text p strong{ color:var(--ink); font-weight:600; }
-  .about-actions{
-    display:flex; gap:16px; margin-top:40px; flex-wrap:wrap;
-  }
+  .about-text p:last-child{ margin-bottom:0; }
+  .about-badge{ display:inline-block; font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; color:var(--accent); border:1px solid var(--accent-dim); background:var(--accent-soft); padding:6px 14px; border-radius:100px; margin-bottom:18px; text-transform:uppercase; }
+  .mini-title{ font-family:var(--display); font-weight:700; font-size:19px; text-transform:uppercase; margin-bottom:10px; }
+  .mini-list{ list-style:none; display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .mini-list li{ font-family:var(--mono); font-size:12px; color:var(--ink-dim); display:flex; gap:10px; align-items:baseline; }
+  .mini-list li::before{ content:'→'; color:var(--accent); }
 
-  /* ---------- timeline / roadmap ---------- */
-  .timeline-wrap{ padding:0 var(--edge) 100px; }
-  .timeline-nav{
-    display:flex; gap:12px; margin-bottom:32px; border-bottom:1px solid var(--line); padding-bottom:16px;
-    flex-wrap:wrap;
-  }
-  .tab-btn{
-    background:none; border:1px solid var(--line); color:var(--ink-dim);
-    padding:10px 20px; border-radius:100px; font-family:var(--mono); font-size:12px;
-    letter-spacing:.08em; transition:all .3s ease;
-  }
-  .tab-btn.active, .tab-btn:hover{
-    background:var(--accent); color:#fff; border-color:var(--accent);
-  }
-  .timeline-card{
-    background:var(--bg-raised); border:1px solid var(--line); border-radius:14px;
-    padding:40px; display:none; animation:fadeIn .4s cubic-bezier(.16,.84,.44,1);
-  }
-  .timeline-card.active{ display:block; }
-  .timeline-card h3{
-    font-family:var(--display); font-size:clamp(22px,3vw,32px); font-weight:800;
-    text-transform:uppercase; margin-bottom:8px;
-  }
-  .timeline-card .time-meta{
-    font-family:var(--mono); font-size:12px; color:var(--accent); letter-spacing:.1em;
-    text-transform:uppercase; margin-bottom:20px; display:block;
-  }
-  .timeline-card p{ color:var(--ink-dim); font-size:15px; line-height:1.8; max-width:700px; }
-  @keyframes fadeIn{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+  /* ---------- timeline ---------- */
+  .timeline-nav{ display:flex; gap:10px; margin-bottom:22px; flex-wrap:wrap; }
+  .tab-btn{ background:none; border:1px solid var(--line); color:var(--ink-dim); padding:9px 18px; border-radius:100px; font-family:var(--mono); font-size:11px; letter-spacing:.08em; transition:all .3s ease; }
+  .tab-btn.active, .tab-btn:hover{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .timeline-body{ display:none; }
+  .timeline-body.active{ display:block; animation:fadeIn .4s cubic-bezier(.16,.84,.44,1); }
+  .timeline-body h3{ font-family:var(--display); font-size:clamp(19px,2.6vw,26px); font-weight:700; text-transform:uppercase; margin-bottom:6px; }
+  .time-meta{ font-family:var(--mono); font-size:11px; color:var(--accent); letter-spacing:.1em; text-transform:uppercase; margin-bottom:16px; display:block; }
+  .timeline-body p{ color:var(--ink-dim); font-size:14px; line-height:1.8; }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
+
+  /* ---------- diagram svg ---------- */
+  .diagram-svg .n{ fill:#fff; stroke:var(--accent); stroke-width:1.4; }
+  .diagram-svg .n-fill{ fill:var(--accent); opacity:.92; }
+  .diagram-svg .edge{ stroke:#b7c3f5; stroke-width:1; }
+  .diagram-svg text{ font-family:var(--mono); fill:#3a4faa; font-size:9.5px; letter-spacing:.03em; }
+  .diagram-svg .dim{ fill:#9aa5c8; }
 
   /* ---------- project cards ---------- */
-  .project{
-    padding:0 var(--edge) 100px;
+  .proj-visual{
+    border-radius:12px; overflow:hidden; margin-bottom:20px;
+    background:radial-gradient(circle at 30% 20%, rgba(52,87,230,.08), transparent 55%), #fbfcfe;
+    display:flex; align-items:center; justify-content:center; padding:16px;
+    border:1px solid var(--line-soft);
   }
-  .project-card{
-    position:relative; border:1px solid var(--line); border-radius:14px; overflow:hidden;
-    background:var(--bg-raised);
-  }
-  .project-visual{
-    height:52vh; min-height:340px; position:relative; display:flex; align-items:center; justify-content:center;
-    background:
-      radial-gradient(circle at 30% 20%, rgba(61,107,255,.16), transparent 55%),
-      radial-gradient(circle at 80% 80%, rgba(61,107,255,.10), transparent 50%),
-      #0c0c0c;
-    overflow:hidden;
-  }
-  .project-info{
-    display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:24px;
-    padding:28px 32px; border-top:1px solid var(--line);
-  }
-  .project-info h3{ font-family:var(--display); font-weight:800; font-size:clamp(22px,3vw,34px); text-transform:uppercase; }
-  .project-meta{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); letter-spacing:.08em; margin-top:10px; text-transform:uppercase; }
-  .project-desc{ max-width:560px; color:var(--ink-dim); font-size:14px; line-height:1.75; margin-top:14px; }
-  .tag-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
-  .pill{
-    font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:var(--ink-dim);
-    border:1px solid var(--line); padding:6px 12px; border-radius:100px;
-  }
-  .view-btn{
-    font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase;
-    border:1px solid var(--line); padding:14px 22px; border-radius:100px; white-space:nowrap;
-    transition:all .3s;
-  }
-  .view-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .proj-title{ font-family:var(--display); font-weight:700; font-size:clamp(19px,2.4vw,28px); text-transform:uppercase; }
+  .proj-meta{ font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); letter-spacing:.08em; margin-top:8px; text-transform:uppercase; }
+  .proj-desc{ color:var(--ink-dim); font-size:13px; line-height:1.75; margin-top:12px; }
+  .tag-row{ display:flex; flex-wrap:wrap; gap:7px; margin-top:16px; }
+  .pill{ font-family:var(--mono); font-size:10px; letter-spacing:.04em; color:var(--ink-dim); border:1px solid var(--line); background:#fff; padding:5px 11px; border-radius:100px; }
+  .view-btn{ font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; border:1px solid var(--line); padding:12px 20px; border-radius:100px; white-space:nowrap; transition:all .3s; display:inline-block; margin-top:20px; }
+  .view-btn:hover{ border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
 
-  /* diagram svg node styling shared */
-  .diagram-svg .n{ fill:#0c0c0c; stroke:var(--accent); stroke-width:1.4; }
-  .diagram-svg .n-fill{ fill:var(--accent); opacity:.9; }
-  .diagram-svg .edge{ stroke:#2a3a6b; stroke-width:1; }
-  .diagram-svg text{ font-family:var(--mono); fill:#9fb2ff; font-size:10px; letter-spacing:.03em; }
-  .diagram-svg .dim{ fill:#54627a; }
+  .status{ font-family:var(--mono); font-size:9px; letter-spacing:.08em; text-transform:uppercase; padding:4px 10px; border-radius:100px; border:1px solid transparent; white-space:nowrap; position:absolute; top:26px; right:26px; }
+  .status.live{ color:var(--good); background:var(--good-bg); }
+  .status.paused{ color:var(--warn); background:var(--warn-bg); }
+  .status.research{ color:var(--purple); background:var(--purple-bg); }
+  .status.concept{ color:var(--cyan); background:var(--cyan-bg); }
 
-  /* ---------- SLIDING TECHNICAL SKILLS MARQUEE ---------- */
-  .skills-marquee-container {
-    padding: 0 0 60px 0;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-  }
+  .grid-card h4{ font-family:var(--display); font-weight:700; font-size:16px; text-transform:uppercase; max-width:75%; }
+  .grid-card p{ color:var(--ink-dim); font-size:12.5px; line-height:1.7; margin-top:12px; }
 
-  /* Fade overlays on edges */
-  .skills-marquee-container::before,
-  .skills-marquee-container::after {
-    content: '';
-    position: absolute;
-    top: 0; bottom: 0; width: 100px;
-    z-index: 2;
-    pointer-events: none;
-  }
-  .skills-marquee-container::before {
-    left: 0;
-    background: linear-gradient(to right, var(--bg), transparent);
-  }
-  .skills-marquee-container::after {
-    right: 0;
-    background: linear-gradient(to left, var(--bg), transparent);
-  }
-
-  .marquee-track {
-    display: flex;
-    gap: 16px;
-    width: max-content;
-    animation: scrollMarquee 35s linear infinite;
-  }
-
-  .marquee-track.reverse {
-    animation-direction: reverse;
-    margin-top: 16px;
-  }
-
-  .marquee-track:hover {
-    animation-play-state: paused;
-  }
-
-  .skill-card {
-    background: var(--bg-raised);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 16px 22px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    white-space: nowrap;
-    transition: border-color 0.3s, transform 0.3s;
-  }
-
-  .skill-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
-
-  .skill-card .category-tag {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: .08em;
-    color: var(--accent);
-    text-transform: uppercase;
-    background: rgba(61, 107, 255, 0.1);
-    padding: 4px 8px;
-    border-radius: 6px;
-  }
-
-  .skill-card .skill-name {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: 15px;
-    letter-spacing: .02em;
-    color: var(--ink);
-    text-transform: uppercase;
-  }
-
-  @keyframes scrollMarquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-
-  /* ---------- skills accordion ---------- */
-  .skills{ padding:0 var(--edge) 60px; }
-  .acc-item{ border-top:1px solid var(--line); }
-  .acc-item:last-child{ border-bottom:1px solid var(--line); }
-  .acc-head{
-    width:100%; background:none; border:none; color:var(--ink); text-align:left;
-    display:flex; justify-content:space-between; align-items:center;
-    padding:30px 4px; gap:24px;
-  }
-  .acc-head h4{
-    font-family:var(--display); font-weight:800; font-size:clamp(20px,2.6vw,30px); text-transform:uppercase;
-    display:flex; align-items:center; gap:18px;
-  }
-  .acc-head .idx{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); font-weight:400; }
-  .acc-plus{
-    width:28px; height:28px; position:relative; flex-shrink:0;
-  }
-  .acc-plus::before, .acc-plus::after{
-    content:''; position:absolute; background:var(--ink-dim); transition:transform .4s, background .3s;
-  }
-  .acc-plus::before{ top:50%; left:0; right:0; height:1px; transform:translateY(-50%); }
-  .acc-plus::after{ left:50%; top:0; bottom:0; width:1px; transform:translateX(-50%); }
-  .acc-item.open .acc-plus::after{ transform:translateX(-50%) rotate(90deg); opacity:0; }
-  .acc-item.open .acc-plus::before{ background:var(--accent); }
-
-  .acc-body{
-    max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.16,.84,.44,1);
-  }
-  .acc-body-inner{
-    padding:0 4px 34px; display:flex; gap:40px; flex-wrap:wrap;
-  }
-  .acc-body-inner p{ color:var(--ink-dim); font-size:14.5px; line-height:1.8; max-width:560px; flex:1 1 320px; }
-  .acc-stack{ display:flex; flex-wrap:wrap; gap:8px; align-content:flex-start; flex:1 1 220px; }
-
-  /* ---------- grid projects ---------- */
-  .grid-projects{
-    display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line);
-    border:1px solid var(--line); margin:0 var(--edge) 100px; border-radius:14px; overflow:hidden;
-  }
-  .grid-card{
-    background:var(--bg-raised); padding:38px 32px; min-height:230px;
-    display:flex; flex-direction:column; justify-content:space-between;
-    transition:background .3s;
-  }
-  .grid-card:hover{ background:#131313; }
-  .grid-card .gc-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-  .grid-card h4{ font-family:var(--display); font-weight:800; font-size:19px; text-transform:uppercase; max-width:80%; }
-  .grid-card .status{
-    font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
-    padding:4px 10px; border-radius:100px; border:1px solid var(--line); color:var(--ink-faint); white-space:nowrap;
-  }
-  .grid-card .status.live{ color:#6fe08a; border-color:#294a33; }
-  .grid-card .status.paused{ color:#e0b76f; border-color:#4a3d29; }
-  .grid-card p{ color:var(--ink-dim); font-size:13.5px; line-height:1.7; margin-top:14px; }
-
-  /* ---------- whats next section ---------- */
-  .whats-next-intro{
-    padding:0 var(--edge) 40px;
-    font-family:var(--mono); font-size:14px; color:var(--ink-dim); max-width:680px; line-height:1.7;
-  }
-
-  @media (max-width:760px){ .grid-projects{ grid-template-columns:1fr; } }
+  /* ---------- skills ---------- */
+  .skill-group-title{ font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; color:var(--accent); text-transform:uppercase; margin-bottom:14px; }
+  .skill-pills{ display:flex; flex-wrap:wrap; gap:8px; }
 
   /* ---------- footer ---------- */
-  footer{
-    border-top:1px solid var(--line); padding:36px var(--edge);
-    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
-  }
-  footer .fl{
-    font-family:var(--mono); font-size:11px; color:var(--ink-faint); letter-spacing:.06em;
-  }
+  footer{ border-top:1px solid var(--line); padding:36px var(--edge); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  footer .fl{ font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); letter-spacing:.06em; }
   footer .flinks{ display:flex; gap:26px; }
-  footer .flinks a{ font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:var(--ink-dim); transition:color .3s; }
+  footer .flinks a{ font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; color:var(--ink-dim); transition:color .3s; }
   footer .flinks a:hover{ color:var(--accent); }
 
+  @media (max-width:900px){
+    .span-8,.span-7,.span-6,.span-5,.span-4,.span-3{ grid-column:span 12; }
+  }
   @media (prefers-reduced-motion: reduce){
-    .reveal{ transition:none; opacity:1; transform:none; }
-    .marquee-track{ animation:none; }
+    .card-slot, .card-slot.float, .chip{ animation:none !important; opacity:1 !important; transform:none !important; }
+    .card{ transition:none; }
   }
 </style>
 </head>
 <body>
 
+<div class="spotlight" id="spotlight"></div>
+
 <header>
   <div class="brand">
     <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M6 4V28M6 16L20 4M6 16L20 28" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="26" cy="16" r="2.4" fill="#3d6bff"/>
+      <circle cx="26" cy="16" r="2.4" fill="#3457e6"/>
     </svg>
     <span>KARTHIKEYA</span>
   </div>
@@ -454,574 +315,283 @@
 
 <!-- ================= HERO ================= -->
 <section class="hero">
-  <canvas id="graph-canvas"></canvas>
+  <div class="floor"><div class="floor-plane" data-depth="0.15"></div></div>
   <div class="wrap hero-inner">
-    <div class="eyebrow reveal">AI/ML ENGINEER · VIT-AP UNIVERSITY</div>
-    <h1>
-      <div class="line reveal"><span>BUILDING SYSTEMS</span></div>
-      <div class="line reveal reveal-delay-1"><span>THAT <span class="accent-word">THINK.</span></span></div>
+    <div class="eyebrow">AI/ML ENGINEER · VIT-AP UNIVERSITY</div>
+    <h1 data-depth="0.05">
+      BUILDING SYSTEMS<br>THAT <span class="accent-word">THINK.</span>
     </h1>
-    <p class="hero-sub reveal reveal-delay-2">
-      I DESIGN RETRIEVAL SYSTEMS, MULTI-AGENT PIPELINES &amp; PUBLISHED RESEARCH —
-      TAKING APPLIED AI FROM CONCEPT TO PRODUCTION, ONE DEBUGGED CELERY WORKER AT A TIME.
+    <p class="hero-sub">
+      I design retrieval systems, multi-agent pipelines &amp; published research —
+      taking applied AI from concept to production, one debugged Celery worker at a time.
     </p>
-    <div class="hero-cta reveal reveal-delay-3">
-      <a class="btn btn-fill" href="#krag">VIEW KRAG →</a>
-      <a class="btn btn-line" href="https://github.com/karthikeya5258044" target="_blank" rel="noopener">GITHUB</a>
+    <div class="hero-cta">
+      <a class="btn btn-fill magnetic" href="#krag">VIEW KRAG →</a>
+      <a class="btn btn-line magnetic" href="https://github.com/karthikeya5258044" target="_blank" rel="noopener">GITHUB</a>
+    </div>
+    <div class="hero-chips" data-depth="0.08">
+      <div class="chip"><div class="num">200+</div><div class="lbl">LeetCode problems solved</div></div>
+      <div class="chip"><div class="num">01</div><div class="lbl">Published research paper</div></div>
     </div>
   </div>
   <div class="scroll-cue"><div class="bar"></div>SCROLL</div>
 </section>
 
-<!-- ================= STATS ================= -->
-<section class="divider">
-  <div class="stats">
-    <div class="stat reveal">
-      <div class="num">200<span class="accent">+</span></div>
-      <h3>LEETCODE PROBLEMS SOLVED</h3>
-      <p>Working daily through a protected 5:30–7:30 AM DSA block, plus NeetCode 150 in Java — building the pattern recognition real engineering interviews demand.</p>
-    </div>
-    <div class="stat reveal reveal-delay-1">
-      <div class="num">01</div>
-      <h3>PUBLISHED RESEARCH PAPER</h3>
-      <p>NeuroRAG — EEG signal processing fused with RAG-based clinical assessment. First-author, live on Zenodo.</p>
+<!-- ================= ABOUT ================= -->
+<section id="about" class="section-pad">
+ <div class="door-wrap">
+  <div class="section-door left"></div><div class="section-door right"></div>
+  <div class="split-title"><h2>Call Me<br>Karthikeya</h2><span class="tag">ABOUT · SCENE 01</span></div>
+  <div class="bento-outer scene">
+    <div class="bento">
+      <div class="card-slot span-8 float" style="animation-delay:.05s">
+        <div class="card">
+          <div class="about-badge">IBM CERTIFIED · AI ANALYST</div>
+          <div class="about-text">
+            <p>My path into AI/ML didn't start with a bootcamp — it started with curiosity, and a lot of debugging at 6 AM. I taught myself to code from the ground up: <strong>Python first, then Java and DSA, then Django, then the data stack.</strong></p>
+            <p>My first real "it's alive" moment was building <strong>Jarvis</strong>, a voice assistant on Whisper + Ollama + pyttsx3 — my introduction to actually wiring AI systems together instead of just calling an API.</p>
+            <p>That curiosity led to <strong>NeuroRAG</strong>, my first published research, and to <strong>KRAG</strong>, my current flagship — a multi-tenant RAG SaaS built backend-first, engineered the way production systems actually need to work.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-slot span-4 float" style="animation-delay:.2s">
+        <div class="card card-accent">
+          <div class="kicker">Right now</div>
+          <p class="mini-title" style="font-size:17px;">Multi-agent orchestrator</p>
+          <p style="color:var(--ink-dim); font-size:13px; line-height:1.75;">An orchestrator/router directing specialist agents on top of KRAG — the natural next step from a single voice assistant to systems that reason, retrieve, and coordinate on their own.</p>
+        </div>
+      </div>
+      <div class="card-slot span-4 float" style="animation-delay:.35s">
+        <div class="card">
+          <div class="kicker">Path</div>
+          <ul class="mini-list">
+            <li>Python → Jarvis assistant</li>
+            <li>Java, DSA fundamentals</li>
+            <li>Django + data stack</li>
+            <li>ML → DL → GenAI (RAG, agents)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-slot span-12 float" style="animation-delay:.5s">
+        <div class="card">
+          <div class="kicker">Currently shipping</div>
+          <p style="color:var(--ink-dim); font-size:13px; line-height:1.8; max-width:640px;">KRAG went from architecture to a working end-to-end multi-tenant RAG platform — hybrid retrieval, tenant isolation, async pipelines, all built and debugged solo. The multi-agent orchestrator on top of it is next.</p>
+          <div class="tag-row"><span class="pill">FastAPI</span><span class="pill">RAG Systems</span><span class="pill">Multi-Agent</span><span class="pill">Distributed Systems</span></div>
+        </div>
+      </div>
     </div>
   </div>
-</section>
-
-<!-- ================= ABOUT ME (CALL ME KARTHIKEYA) ================= -->
-<section id="about" class="section-pad divider">
-  <div class="split-title reveal">
-    <h2>CALL ME<br>KARTHIKEYA</h2>
-    <span class="tag">ABOUT ME</span>
-  </div>
-  <div class="about-content reveal">
-    <div class="about-badge">IBM CERTIFIED · AI ANALYST</div>
-    <div class="about-text">
-      <p>
-        My path into AI/ML didn't start with a bootcamp — it started with curiosity, and a lot of debugging at 6 AM. I taught myself to code from the ground up: <strong>Python first, then Java and DSA, then Django, then the data stack — NumPy, Pandas, SQL, Power BI</strong>.
-      </p>
-      <p>
-        My first real "it's alive" moment was building <strong>Jarvis</strong>, a voice assistant running on Whisper for speech recognition, Ollama for local LLM reasoning, and pyttsx3 for speech — my introduction to actually wiring AI systems together instead of just calling an API.
-      </p>
-      <p>
-        From there I moved into automation, building AI agents with <strong>n8n and Ollama</strong>, then went deep into the fundamentals — machine learning, deep learning, and eventually generative AI: <strong>RAG pipelines, multi-agent systems, and the architecture behind transformers</strong>. That curriculum phase ended with a decision that still shapes how I work: <em>stop accumulating theory, start shipping deployed systems.</em>
-      </p>
-      <p>
-        That decision led to <strong>NeuroRAG</strong>, my first published research — combining EEG signal processing with RAG-based clinical assessment, now live on Zenodo. And it led to <strong>KRAG</strong>, my current flagship project: a multi-tenant RAG SaaS platform built backend-first, with hybrid retrieval, tenant-isolated vector storage, async processing pipelines, and JWT auth — engineered the way production systems actually need to work, not the way tutorials show it.
-      </p>
-      <p>
-        The system I'm building right now is a <strong>multi-agent orchestration layer on top of KRAG</strong> — an orchestrator/router directing specialist agents. It's the natural next step in a journey that started with a single voice assistant answering simple commands, and is now about building systems that reason, retrieve, and coordinate on their own.
-      </p>
-    </div>
-    <div class="about-actions">
-      <a class="btn btn-fill" href="https://github.com/karthikeya5258044" target="_blank" rel="noopener">START A CONVERSATION / GITHUB →</a>
-    </div>
-  </div>
+ </div>
 </section>
 
 <!-- ================= ACADEMIC JOURNEY ================= -->
-<section class="section-pad divider">
-  <div class="split-title reveal">
-    <h2>Academic<br>Journey</h2>
-    <span class="tag">00 / TIMELINE</span>
-  </div>
-  <div class="timeline-wrap reveal">
-    <div class="timeline-nav">
-      <button class="tab-btn active" onclick="switchYear('yr1', this)">1ST YEAR (2024 - 2025)</button>
-      <button class="tab-btn" onclick="switchYear('yr2', this)">2ND YEAR (2025 - 2026)</button>
-      <button class="tab-btn" onclick="switchYear('yr3', this)">3RD YEAR (2026+)</button>
-    </div>
-
-    <!-- Year 1 -->
-    <div id="yr1" class="timeline-card active">
-      <h3>Foundations &amp; Core Systems</h3>
-      <span class="time-meta">2024 — 2025 / 1st Year</span>
-      <p>
-        Focused heavily on core computer science foundations, algorithm design, and early AI builds. During this phase, I built local assistants like the <strong>Jarvis Voice Assistant</strong>, mastered core data structures, and tackled preliminary data science pipelines including customer churn prediction, fake review detection, and local Chrome agents.
-      </p>
-    </div>
-
-    <!-- Year 2 -->
-    <div id="yr2" class="timeline-card">
-      <h3>Advanced AI &amp; Research Engineering</h3>
-      <span class="time-meta">2025 — 2026 / 2nd Year</span>
-      <p>
-        Shifted directly into production-grade AI systems, research publication, and high-performance algorithms. Authored and published the <strong>NeuroRAG</strong> research paper on Zenodo, engineered the multi-tenant <strong>KRAG</strong> system, built <strong>SmartTrack AI</strong> in a 24-hour hackathon, designed <strong>Traffic Chaser</strong>, automated workflows via <strong>n8n</strong>, and logged 200+ LeetCode problems through disciplined daily practice.
-      </p>
-    </div>
-
-    <!-- Year 3 -->
-    <div id="yr3" class="timeline-card">
-      <h3>Multi-Agent Networks &amp; Production Scale</h3>
-      <span class="time-meta">2026+ / 3rd Year &amp; Beyond</span>
-      <p style="margin-bottom:24px;">
-        Currently architecting multi-agent orchestration frameworks (LangGraph, MCP servers), production-level hybrid retrieval infrastructures, and scalable cloud integrations.
-      </p>
-      <a class="btn btn-fill" href="#whats-next">GO TO WHAT'S NEXT SECTION TO VIEW →</a>
+<section class="section-pad">
+ <div class="door-wrap">
+  <div class="section-door left"></div><div class="section-door right"></div>
+  <div class="split-title"><h2>Academic<br>Journey</h2><span class="tag">TIMELINE · SCENE 02</span></div>
+  <div class="bento-outer scene">
+    <div class="card-slot span-12">
+      <div class="card">
+        <div class="timeline-nav">
+          <button class="tab-btn active" onclick="switchYear('yr1', this)">1ST YEAR (2024–2025)</button>
+          <button class="tab-btn" onclick="switchYear('yr2', this)">2ND YEAR (2025–2026)</button>
+          <button class="tab-btn" onclick="switchYear('yr3', this)">3RD YEAR (2026+)</button>
+        </div>
+        <div id="yr1" class="timeline-body active">
+          <h3>Foundations &amp; Core Systems</h3>
+          <span class="time-meta">2024 — 2025 / 1st Year</span>
+          <p>Focused heavily on core computer science foundations, algorithm design, and early AI builds — the <strong>Jarvis Voice Assistant</strong>, core data structures, and preliminary pipelines including customer churn prediction, fake review detection, and local Chrome agents.</p>
+        </div>
+        <div id="yr2" class="timeline-body">
+          <h3>Advanced AI &amp; Research Engineering</h3>
+          <span class="time-meta">2025 — 2026 / 2nd Year</span>
+          <p>Shifted into production-grade AI systems and research publication. Authored and published <strong>NeuroRAG</strong> on Zenodo, engineered the multi-tenant <strong>KRAG</strong> system, built <strong>SmartTrack AI</strong> in a 24-hour hackathon, designed <strong>Traffic Chaser</strong>, automated workflows via <strong>n8n</strong>, and logged 200+ LeetCode problems.</p>
+        </div>
+        <div id="yr3" class="timeline-body">
+          <h3>Multi-Agent Networks &amp; Production Scale</h3>
+          <span class="time-meta">2026+ / 3rd Year &amp; Beyond</span>
+          <p style="margin-bottom:20px;">Currently architecting multi-agent orchestration frameworks (LangGraph, MCP servers), production-level hybrid retrieval infrastructure, and scalable cloud integrations.</p>
+          <a class="btn btn-fill magnetic" href="#whats-next">GO TO WHAT'S NEXT →</a>
+        </div>
+      </div>
     </div>
   </div>
+ </div>
 </section>
 
 <!-- ================= FLAGSHIP: KRAG ================= -->
-<section id="krag" class="section-pad divider">
-  <div class="split-title reveal">
-    <h2>Flagship<br>System</h2>
-    <span class="tag">01 / FEATURED PROJECT</span>
-  </div>
-  <div class="project reveal">
-    <div class="project-card">
-      <div class="project-visual">
-        <svg class="diagram-svg" viewBox="0 0 600 320" width="88%" style="max-width:640px">
-          <line class="edge" x1="60" y1="60" x2="180" y2="60"/>
-          <line class="edge" x1="180" y1="60" x2="300" y2="60"/>
-          <line class="edge" x1="300" y1="60" x2="300" y2="140"/>
-          <line class="edge" x1="300" y1="140" x2="180" y2="200"/>
-          <line class="edge" x1="300" y1="140" x2="420" y2="200"/>
-          <line class="edge" x1="180" y1="200" x2="180" y2="260"/>
-          <line class="edge" x1="420" y1="200" x2="420" y2="260"/>
-          <line class="edge" x1="300" y1="140" x2="300" y2="260"/>
-
-          <rect class="n" x="20" y="40" width="80" height="40" rx="6"/>
-          <text x="60" y="65" text-anchor="middle">CLIENT</text>
-
-          <rect class="n" x="140" y="40" width="80" height="40" rx="6"/>
-          <text x="180" y="65" text-anchor="middle">JWT AUTH</text>
-
-          <rect class="n" x="260" y="40" width="80" height="40" rx="6"/>
-          <text x="300" y="65" text-anchor="middle">FASTAPI</text>
-
-          <rect class="n" x="260" y="120" width="80" height="40" rx="6"/>
-          <text x="300" y="145" text-anchor="middle">ROUTER</text>
-
-          <rect class="n" x="140" y="180" width="80" height="40" rx="6"/>
-          <text x="180" y="205" text-anchor="middle">CELERY</text>
-
-          <rect class="n" x="380" y="180" width="80" height="40" rx="6"/>
-          <text x="420" y="205" text-anchor="middle">CHROMADB</text>
-
-          <rect class="n" x="260" y="180" width="80" height="40" rx="6"/>
-          <text x="300" y="205" text-anchor="middle">POSTGRES</text>
-
-          <rect class="n n-fill" x="140" y="240" width="80" height="40" rx="6"/>
-          <text x="180" y="265" fill="#0a0a0a" text-anchor="middle">REDIS</text>
-
-          <rect class="n n-fill" x="380" y="240" width="80" height="40" rx="6"/>
-          <text x="420" y="265" fill="#0a0a0a" text-anchor="middle">BM25+VEC</text>
-
-          <rect class="n n-fill" x="260" y="240" width="80" height="40" rx="6"/>
-          <text x="300" y="265" fill="#0a0a0a" text-anchor="middle">RRF FUSE</text>
-
-          <text x="520" y="290" class="dim" text-anchor="end">HYBRID RETRIEVAL PIPELINE</text>
-        </svg>
-      </div>
-      <div class="project-info">
-        <div>
-          <h3>KRAG</h3>
-          <div class="project-meta">MULTI-TENANT RAG SAAS · SYSTEM DESIGN &amp; DEVELOPMENT · 2026</div>
-          <p class="project-desc">
-            A multi-tenant Retrieval-Augmented Generation platform built backend-first, end-to-end.
-            Hybrid BM25 + vector retrieval fused with Reciprocal Rank Fusion, tenant-isolated ChromaDB
-            storage, async processing via Celery + Redis, and JWT-secured multi-tenant auth — engineered
-            the way production systems actually need to run.
-          </p>
-          <div class="tag-row">
-            <span class="pill">FastAPI</span>
-            <span class="pill">PostgreSQL</span>
-            <span class="pill">Celery + Redis</span>
-            <span class="pill">ChromaDB</span>
-            <span class="pill">Hybrid Retrieval</span>
-            <span class="pill">React / Vite</span>
-          </div>
+<section id="krag" class="section-pad">
+ <div class="door-wrap">
+  <div class="section-door left"></div><div class="section-door right"></div>
+  <div class="split-title"><h2>Flagship<br>System</h2><span class="tag">FEATURED · SCENE 03</span></div>
+  <div class="bento-outer scene">
+    <div class="card-slot span-12">
+      <div class="card">
+        <div class="proj-visual">
+          <svg class="diagram-svg" viewBox="0 0 600 320" width="70%" style="max-width:560px">
+            <line class="edge" x1="60" y1="60" x2="180" y2="60"/>
+            <line class="edge" x1="180" y1="60" x2="300" y2="60"/>
+            <line class="edge" x1="300" y1="60" x2="300" y2="140"/>
+            <line class="edge" x1="300" y1="140" x2="180" y2="200"/>
+            <line class="edge" x1="300" y1="140" x2="420" y2="200"/>
+            <line class="edge" x1="180" y1="200" x2="180" y2="260"/>
+            <line class="edge" x1="420" y1="200" x2="420" y2="260"/>
+            <line class="edge" x1="300" y1="140" x2="300" y2="260"/>
+            <rect class="n" x="20" y="40" width="80" height="40" rx="6"/><text x="60" y="65" text-anchor="middle">CLIENT</text>
+            <rect class="n" x="140" y="40" width="80" height="40" rx="6"/><text x="180" y="65" text-anchor="middle">JWT AUTH</text>
+            <rect class="n" x="260" y="40" width="80" height="40" rx="6"/><text x="300" y="65" text-anchor="middle">FASTAPI</text>
+            <rect class="n" x="260" y="120" width="80" height="40" rx="6"/><text x="300" y="145" text-anchor="middle">ROUTER</text>
+            <rect class="n" x="140" y="180" width="80" height="40" rx="6"/><text x="180" y="205" text-anchor="middle">CELERY</text>
+            <rect class="n" x="380" y="180" width="80" height="40" rx="6"/><text x="420" y="205" text-anchor="middle">CHROMADB</text>
+            <rect class="n" x="260" y="180" width="80" height="40" rx="6"/><text x="300" y="205" text-anchor="middle">POSTGRES</text>
+            <rect class="n n-fill" x="140" y="240" width="80" height="40" rx="6"/><text x="180" y="265" fill="#fff" text-anchor="middle">REDIS</text>
+            <rect class="n n-fill" x="380" y="240" width="80" height="40" rx="6"/><text x="420" y="265" fill="#fff" text-anchor="middle">BM25+VEC</text>
+            <rect class="n n-fill" x="260" y="240" width="80" height="40" rx="6"/><text x="300" y="265" fill="#fff" text-anchor="middle">RRF FUSE</text>
+          </svg>
         </div>
+        <div class="proj-title">KRAG</div>
+        <div class="proj-meta">MULTI-TENANT RAG SAAS · SYSTEM DESIGN &amp; DEVELOPMENT · 2026</div>
+        <p class="proj-desc" style="max-width:680px;">A multi-tenant Retrieval-Augmented Generation platform built backend-first, end-to-end. Hybrid BM25 + vector retrieval fused with Reciprocal Rank Fusion, tenant-isolated ChromaDB storage, async processing via Celery + Redis, and JWT-secured multi-tenant auth.</p>
+        <div class="tag-row"><span class="pill">FastAPI</span><span class="pill">PostgreSQL</span><span class="pill">Celery + Redis</span><span class="pill">ChromaDB</span><span class="pill">Hybrid Retrieval</span><span class="pill">React / Vite</span></div>
         <a class="view-btn" href="https://github.com/karthikeya5258044" target="_blank" rel="noopener">VIEW PROJECT</a>
       </div>
     </div>
   </div>
+ </div>
 </section>
 
-<!-- ================= RESEARCH: NeuroRAG ================= -->
-<section class="section-pad divider">
-  <div class="split-title reveal">
-    <h2>Published<br>Research</h2>
-    <span class="tag">02 / NEURORAG</span>
-  </div>
-  <div class="project reveal">
-    <div class="project-card">
-      <div class="project-visual">
-        <svg class="diagram-svg" viewBox="0 0 600 220" width="88%" style="max-width:640px">
-          <polyline class="edge" fill="none" stroke="#3d6bff" stroke-width="1.6"
-            points="20,110 60,110 80,60 100,160 120,40 140,180 160,110 200,110 220,90 240,130 260,110 300,110 320,70 340,150 360,110 400,110 420,95 440,125 460,110 540,110"/>
-          <circle class="n-fill" cx="120" cy="40" r="4"/>
-          <circle class="n-fill" cx="320" cy="70" r="4"/>
-          <text x="20" y="30" class="dim">EEG SIGNAL</text>
-          <text x="420" y="30" class="dim" text-anchor="end">RAG CLINICAL ASSESSMENT</text>
-        </svg>
-      </div>
-      <div class="project-info">
-        <div>
-          <h3>NeuroRAG</h3>
-          <div class="project-meta">RESEARCH · FIRST AUTHOR · 2026</div>
-          <p class="project-desc">
-            Combines EEG signal processing with RAG-based clinical assessment. Published and live
-            on Zenodo as first-author work — a research differentiator most student portfolios don't carry.
-          </p>
-          <div class="tag-row">
-            <span class="pill">EEG Processing</span>
-            <span class="pill">RAG</span>
-            <span class="pill">Clinical AI</span>
-            <span class="pill">DOI: 10.5281/zenodo.20677189</span>
+<!-- ================= RESEARCH + HACKATHON ================= -->
+<section class="section-pad">
+ <div class="door-wrap">
+  <div class="section-door left"></div><div class="section-door right"></div>
+  <div class="split-title"><h2>Research &amp;<br>Builds</h2><span class="tag">SCENE 04</span></div>
+  <div class="bento-outer scene">
+    <div class="bento">
+      <div class="card-slot span-6 float" style="animation-delay:.1s">
+        <div class="card">
+          <div class="proj-visual">
+            <svg class="diagram-svg" viewBox="0 0 600 220" width="90%" style="max-width:520px">
+              <polyline class="edge" fill="none" stroke="#3457e6" stroke-width="1.6" points="20,110 60,110 80,60 100,160 120,40 140,180 160,110 200,110 220,90 240,130 260,110 300,110 320,70 340,150 360,110 400,110 420,95 440,125 460,110 540,110"/>
+              <circle class="n-fill" cx="120" cy="40" r="4"/><circle class="n-fill" cx="320" cy="70" r="4"/>
+              <text x="20" y="30" class="dim">EEG SIGNAL</text>
+              <text x="420" y="30" class="dim" text-anchor="end">RAG ASSESSMENT</text>
+            </svg>
           </div>
+          <div class="proj-title" style="font-size:21px;">NeuroRAG</div>
+          <div class="proj-meta">RESEARCH · FIRST AUTHOR · 2026</div>
+          <p class="proj-desc">Combines EEG signal processing with RAG-based clinical assessment. Published and live on Zenodo as first-author work.</p>
+          <div class="tag-row"><span class="pill">EEG</span><span class="pill">RAG</span><span class="pill">Clinical AI</span></div>
+          <a class="view-btn" href="https://doi.org/10.5281/zenodo.20677189" target="_blank" rel="noopener">READ PAPER</a>
         </div>
-        <a class="view-btn" href="https://doi.org/10.5281/zenodo.20677189" target="_blank" rel="noopener">READ PAPER</a>
+      </div>
+      <div class="card-slot span-6 float" style="animation-delay:.25s">
+        <div class="card">
+          <div class="proj-visual">
+            <svg class="diagram-svg" viewBox="0 0 600 220" width="90%" style="max-width:520px">
+              <line class="edge" x1="40" y1="60" x2="150" y2="60"/><line class="edge" x1="150" y1="60" x2="260" y2="60"/>
+              <line class="edge" x1="260" y1="60" x2="370" y2="60"/><line class="edge" x1="370" y1="60" x2="480" y2="60"/>
+              <rect class="n" x="0" y="40" width="80" height="40" rx="6"/><text x="40" y="65" text-anchor="middle">KAGGLE</text>
+              <rect class="n" x="110" y="40" width="80" height="40" rx="6"/><text x="150" y="65" text-anchor="middle">FEATURES</text>
+              <rect class="n n-fill" x="220" y="40" width="80" height="40" rx="6"/><text x="260" y="65" fill="#fff" text-anchor="middle">RF MODEL</text>
+              <rect class="n" x="330" y="40" width="80" height="40" rx="6"/><text x="370" y="65" text-anchor="middle">JOBLIB</text>
+              <rect class="n" x="440" y="40" width="80" height="40" rx="6"/><text x="480" y="65" text-anchor="middle">DJANGO</text>
+            </svg>
+          </div>
+          <div class="proj-title" style="font-size:21px;">SmartTrack AI</div>
+          <div class="proj-meta">SMART LOGISTICS · 24-HOUR HACKATHON · 2026</div>
+          <p class="proj-desc">Predictive logistics platform — Random Forest classifier estimating shipment delay probability from weather, traffic, and hub-utilization features, served through Django with 1,000+ managed records.</p>
+          <div class="tag-row"><span class="pill">Django</span><span class="pill">Scikit-learn</span><span class="pill">Random Forest</span></div>
+          <a class="view-btn" href="https://github.com/karthikeya5258044/smart-logisticss-" target="_blank" rel="noopener">VIEW PROJECT</a>
+        </div>
       </div>
     </div>
   </div>
-</section>
-
-<!-- ================= SMARTTRACK AI ================= -->
-<section class="section-pad divider">
-  <div class="split-title reveal">
-    <h2>Hackathon<br>Build</h2>
-    <span class="tag">03 / SMARTTRACK AI</span>
-  </div>
-  <div class="project reveal">
-    <div class="project-card">
-      <div class="project-visual">
-        <svg class="diagram-svg" viewBox="0 0 600 260" width="88%" style="max-width:640px">
-          <line class="edge" x1="40" y1="60" x2="150" y2="60"/>
-          <line class="edge" x1="150" y1="60" x2="260" y2="60"/>
-          <line class="edge" x1="260" y1="60" x2="370" y2="60"/>
-          <line class="edge" x1="370" y1="60" x2="480" y2="60"/>
-          <line class="edge" x1="150" y1="60" x2="150" y2="140"/>
-          <line class="edge" x1="480" y1="60" x2="480" y2="140"/>
-
-          <rect class="n" x="0" y="40" width="80" height="40" rx="6"/>
-          <text x="40" y="65" text-anchor="middle">KAGGLE</text>
-
-          <rect class="n" x="110" y="40" width="80" height="40" rx="6"/>
-          <text x="150" y="65" text-anchor="middle">FEATURES</text>
-
-          <rect class="n n-fill" x="220" y="40" width="80" height="40" rx="6"/>
-          <text x="260" y="65" fill="#0a0a0a" text-anchor="middle">RF MODEL</text>
-
-          <rect class="n" x="330" y="40" width="80" height="40" rx="6"/>
-          <text x="370" y="65" text-anchor="middle">JOBLIB</text>
-
-          <rect class="n" x="440" y="40" width="80" height="40" rx="6"/>
-          <text x="480" y="65" text-anchor="middle">DJANGO</text>
-
-          <rect class="n" x="110" y="120" width="80" height="40" rx="6"/>
-          <text x="150" y="145" text-anchor="middle">WEATHER</text>
-
-          <rect class="n" x="440" y="120" width="80" height="40" rx="6"/>
-          <text x="480" y="145" text-anchor="middle">ADMIN</text>
-
-          <text x="0" y="200" class="dim">1,000+ SHIPMENT RECORDS</text>
-          <text x="520" y="200" class="dim" text-anchor="end">24-HOUR BUILD</text>
-        </svg>
-      </div>
-      <div class="project-info">
-        <div>
-          <h3>SmartTrack AI</h3>
-          <div class="project-meta">SMART LOGISTICS · 24-HOUR HACKATHON · 2026</div>
-          <p class="project-desc">
-            A full-stack predictive logistics platform that shifts shipment tracking from reactive
-            monitoring to proactive risk intelligence. Trained a Random Forest classifier on a Kaggle
-            logistics dataset to estimate delay probability, engineering features from weather, traffic
-            congestion, hub utilization, and shipment status. Serialized with Joblib and deployed inside
-            a Django backend, with real-time predictions surfaced through a JavaScript (Fetch API) frontend
-            and a fully functional Django Admin Portal managing 1,000+ shipment records.
-          </p>
-          <div class="tag-row">
-            <span class="pill">Django</span>
-            <span class="pill">Scikit-learn</span>
-            <span class="pill">Random Forest</span>
-            <span class="pill">Joblib</span>
-            <span class="pill">SQLite</span>
-          </div>
-        </div>
-        <a class="view-btn" href="https://github.com/karthikeya5258044/smart-logisticss-" target="_blank" rel="noopener">VIEW PROJECT</a>
-      </div>
-    </div>
-  </div>
+ </div>
 </section>
 
 <!-- ================= SKILLS ================= -->
-<section class="section-pad divider">
-  <div class="split-title reveal">
-    <h2>Technical<br>Skills</h2>
-    <span class="tag">04 / SKILLS &amp; CAPABILITIES</span>
-  </div>
-
-  <!-- AUTOMATICALLY SLIDING SKILLS MARQUEE -->
-  <div class="skills-marquee-container reveal">
-    <!-- Track 1: Moving Left -->
-    <div class="marquee-track">
-      <!-- Backend Developer -->
-      <div class="skill-card"><span class="category-tag">Backend</span><span class="skill-name">System Design</span></div>
-      <div class="skill-card"><span class="category-tag">Backend</span><span class="skill-name">FastAPI</span></div>
-      <div class="skill-card"><span class="category-tag">Backend</span><span class="skill-name">Django</span></div>
-      <div class="skill-card"><span class="category-tag">Backend</span><span class="skill-name">SQL</span></div>
-      <div class="skill-card"><span class="category-tag">Backend</span><span class="skill-name">REST APIs</span></div>
-      
-      <!-- AI Developer -->
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">LangChain</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">LangGraph</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">LangSmith</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">FastMCP</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">n8n</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">HuggingFace</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">LLM Fine-Tuning</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">Ollama</span></div>
-
-      <!-- Duplicated for seamless continuous loop -->
-      <div class="skill-card"><span class="category-tag">Backend</span><span class="skill-name">System Design</span></div>
-      <div class="skill-card"><span class="category-tag">Backend</span><span class="skill-name">FastAPI</span></div>
-      <div class="skill-card"><span class="category-tag">Backend</span><span class="skill-name">Django</span></div>
-      <div class="skill-card"><span class="category-tag">Backend</span><span class="skill-name">SQL</span></div>
-      <div class="skill-card"><span class="category-tag">Backend</span><span class="skill-name">REST APIs</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">LangChain</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">LangGraph</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">LangSmith</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">FastMCP</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">n8n</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">HuggingFace</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">LLM Fine-Tuning</span></div>
-      <div class="skill-card"><span class="category-tag">AI Dev</span><span class="skill-name">Ollama</span></div>
-    </div>
-
-    <!-- Track 2: Moving Right -->
-    <div class="marquee-track reverse">
-      <!-- Data Science / Data Analyst -->
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Power BI</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">ML Models</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Fine-Tuning</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Excel</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Data Cleaning</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Data Mining</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Data Warehousing</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">NoSQL</span></div>
-
-      <!-- Core CS Skills -->
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">Python</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">Java</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">C / C++</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">DSA &amp; DAA</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">Operating Systems</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">Computer Networks</span></div>
-
-      <!-- Duplicated for seamless continuous loop -->
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Power BI</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">ML Models</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Fine-Tuning</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Excel</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Data Cleaning</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Data Mining</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">Data Warehousing</span></div>
-      <div class="skill-card"><span class="category-tag">Data</span><span class="skill-name">NoSQL</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">Python</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">Java</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">C / C++</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">DSA &amp; DAA</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">Operating Systems</span></div>
-      <div class="skill-card"><span class="category-tag">Core CS</span><span class="skill-name">Computer Networks</span></div>
-    </div>
-  </div>
-
-  <!-- ACCORDION SKILLS CATEGORIES -->
-  <div class="skills">
-    <div class="acc-item open reveal">
-      <button class="acc-head">
-        <h4><span class="idx">01</span> BACKEND ENGINEERING</h4>
-        <span class="acc-plus"></span>
-      </button>
-      <div class="acc-body">
-        <div class="acc-body-inner">
-          <p>Production backend systems built with modern Python frameworks, relational/NoSQL storage, and architectural patterns designed for low latency and scalability.</p>
-          <div class="acc-stack">
-            <span class="pill">System Design</span><span class="pill">FastAPI</span><span class="pill">Django</span><span class="pill">SQL</span><span class="pill">APIs</span><span class="pill">PostgreSQL</span>
-          </div>
+<section class="section-pad">
+ <div class="door-wrap">
+  <div class="section-door left"></div><div class="section-door right"></div>
+  <div class="split-title"><h2>Technical<br>Skills</h2><span class="tag">SCENE 05</span></div>
+  <div class="bento-outer scene">
+    <div class="bento">
+      <div class="card-slot span-6 float" style="animation-delay:.05s">
+        <div class="card">
+          <div class="skill-group-title">01 · Backend Engineering</div>
+          <div class="skill-pills"><span class="pill">System Design</span><span class="pill">FastAPI</span><span class="pill">Django</span><span class="pill">SQL</span><span class="pill">REST APIs</span><span class="pill">PostgreSQL</span></div>
         </div>
       </div>
-    </div>
-
-    <div class="acc-item reveal">
-      <button class="acc-head">
-        <h4><span class="idx">02</span> AI &amp; AGENT DEVELOPMENT</h4>
-        <span class="acc-plus"></span>
-      </button>
-      <div class="acc-body">
-        <div class="acc-body-inner">
-          <p>Architecting multi-agent networks, RAG orchestration frameworks, custom MCP tools, and local/cloud LLM inference pipelines.</p>
-          <div class="acc-stack">
-            <span class="pill">LangChain</span><span class="pill">LangGraph</span><span class="pill">LangSmith</span><span class="pill">FastMCP</span><span class="pill">n8n</span><span class="pill">HuggingFace</span><span class="pill">LLM Fine-Tuning</span><span class="pill">Ollama</span>
-          </div>
+      <div class="card-slot span-6 float" style="animation-delay:.15s">
+        <div class="card card-accent">
+          <div class="skill-group-title">02 · AI &amp; Agent Development</div>
+          <div class="skill-pills"><span class="pill">LangChain</span><span class="pill">LangGraph</span><span class="pill">LangSmith</span><span class="pill">FastMCP</span><span class="pill">n8n</span><span class="pill">HuggingFace</span><span class="pill">LLM Fine-Tuning</span><span class="pill">Ollama</span></div>
         </div>
       </div>
-    </div>
-
-    <div class="acc-item reveal">
-      <button class="acc-head">
-        <h4><span class="idx">03</span> DATA SCIENCE &amp; ANALYTICS</h4>
-        <span class="acc-plus"></span>
-      </button>
-      <div class="acc-body">
-        <div class="acc-body-inner">
-          <p>Data engineering, analytical modeling, data warehousing, and predictive intelligence from structured and unstructured sources.</p>
-          <div class="acc-stack">
-            <span class="pill">Power BI</span><span class="pill">ML Models</span><span class="pill">Fine-Tuning</span><span class="pill">Excel</span><span class="pill">Data Cleaning</span><span class="pill">Data Mining</span><span class="pill">Data Warehousing</span><span class="pill">NoSQL</span>
-          </div>
+      <div class="card-slot span-6 float" style="animation-delay:.25s">
+        <div class="card">
+          <div class="skill-group-title">03 · Data Science &amp; Analytics</div>
+          <div class="skill-pills"><span class="pill">Power BI</span><span class="pill">ML Models</span><span class="pill">Excel</span><span class="pill">Data Cleaning</span><span class="pill">Data Mining</span><span class="pill">Data Warehousing</span><span class="pill">NoSQL</span></div>
         </div>
       </div>
-    </div>
-
-    <div class="acc-item reveal">
-      <button class="acc-head">
-        <h4><span class="idx">04</span> CORE COMPUTER SCIENCE</h4>
-        <span class="acc-plus"></span>
-      </button>
-      <div class="acc-body">
-        <div class="acc-body-inner">
-          <p>Strong algorithmic foundation and system fundamentals, validated through 200+ solved LeetCode problems and rigorous coursework.</p>
-          <div class="acc-stack">
-            <span class="pill">Python</span><span class="pill">Java</span><span class="pill">C</span><span class="pill">C++</span><span class="pill">DSA</span><span class="pill">DAA</span><span class="pill">Operating Systems</span><span class="pill">Computer Networks</span>
-          </div>
+      <div class="card-slot span-6 float" style="animation-delay:.35s">
+        <div class="card">
+          <div class="skill-group-title">04 · Core Computer Science</div>
+          <div class="skill-pills"><span class="pill">Python</span><span class="pill">Java</span><span class="pill">C / C++</span><span class="pill">DSA &amp; DAA</span><span class="pill">Operating Systems</span><span class="pill">Computer Networks</span></div>
         </div>
       </div>
     </div>
   </div>
+ </div>
 </section>
 
 <!-- ================= OTHER PROJECTS ================= -->
-<section class="section-pad divider">
-  <div class="split-title reveal">
-    <h2>Future Projects<br>&amp; Other Builds</h2>
-    <span class="tag">05 / MORE PROJECTS</span>
-  </div>
-  <div class="grid-projects reveal">
-    <div class="grid-card">
-      <div class="gc-top">
-        <h4>Fake Review Detection</h4>
-        <span class="status live">Shipped</span>
-      </div>
-      <p>A natural language processing pipeline designed to classify authentic vs. deceptive product reviews using TF-IDF feature extraction, sentiment analysis, and supervised machine learning models to maintain e-commerce review integrity.</p>
-      <a class="view-btn" style="margin-top:18px; align-self:flex-start;" href="https://github.com/karthikeya5258044" target="_blank" rel="noopener">VIEW PROJECT</a>
-    </div>
-
-    <div class="grid-card">
-      <div class="gc-top">
-        <h4>Traffic Chaser</h4>
-        <span class="status live">Shipped</span>
-      </div>
-      <p>An intelligent traffic analysis and routing optimization platform designed to process route telemetry, detect congestion bottlenecks, and optimize spatial pathing using predictive modeling and real-time mapping inputs.</p>
-      <a class="view-btn" style="margin-top:18px; align-self:flex-start;" href="https://github.com/karthikeya5258044" target="_blank" rel="noopener">VIEW PROJECT</a>
-    </div>
-
-    <div class="grid-card">
-      <div class="gc-top">
-        <h4>n8n Automation Pipelines</h4>
-        <span class="status live">Shipped</span>
-      </div>
-      <p>Automated backend and agentic workflows using self-hosted n8n instances — connecting webhooks, LLM APIs, vector databases, and notification systems to streamline multi-service data pipelines without API overhead.</p>
-      <a class="view-btn" style="margin-top:18px; align-self:flex-start;" href="https://github.com/karthikeya5258044" target="_blank" rel="noopener">VIEW PROJECT</a>
-    </div>
-
-    <div class="grid-card">
-      <div class="gc-top">
-        <h4>Karthikeya Agent</h4>
-        <span class="status live">Shipped</span>
-      </div>
-      <p>A Chrome extension that lets you ask questions about any webpage using a local Ollama LLM — indexes page content, chunks it, and retrieves relevant sections via TF-IDF similarity search, with real-time streaming answers. 100% local, no API keys, no data leaving the machine.</p>
-      <a class="view-btn" style="margin-top:18px; align-self:flex-start;" href="https://github.com/karthikeya5258044/karthikeya-agent" target="_blank" rel="noopener">VIEW PROJECT</a>
-    </div>
-
-    <div class="grid-card">
-      <div class="gc-top">
-        <h4>Weather Dashboard</h4>
-        <span class="status live">Shipped</span>
-      </div>
-      <p>A responsive weather dashboard pulling real-time data from OpenWeatherMap — current conditions, hourly and 7-day forecasts, interactive charts, dark mode, and saved locations. React + TypeScript frontend, Node.js/Express backend, Dockerized.</p>
-      <a class="view-btn" style="margin-top:18px; align-self:flex-start;" href="https://github.com/karthikeya5258044/weather-dashboard" target="_blank" rel="noopener">VIEW PROJECT</a>
-    </div>
-
-    <div class="grid-card">
-      <div class="gc-top">
-        <h4>Customer Churn Prediction</h4>
-        <span class="status live">Shipped</span>
-      </div>
-      <p>A telecom churn prediction pipeline combining Apriori association rule mining with Decision Tree/Random Forest classification — ~80% accuracy on 7,043 real-world customer records, with feature engineering built around contract type, tenure, and monthly charges.</p>
-      <a class="view-btn" style="margin-top:18px; align-self:flex-start;" href="https://github.com/karthikeya5258044/Customer-Churn-Prediction-Using-Data-Mining-Algorithms" target="_blank" rel="noopener">VIEW PROJECT</a>
-    </div>
-
-    <div class="grid-card">
-      <div class="gc-top">
-        <h4>Kubera / Trading Copilot</h4>
-        <span class="status paused">Paused</span>
-      </div>
-      <p>Multi-model stock prediction on NSE data — XGBoost, Random Forest, KMeans and anomaly detection. Paused on a HOLD-class imbalance problem; Power BI dashboard is next.</p>
-    </div>
-
-    <div class="grid-card">
-      <div class="gc-top">
-        <h4>Jarvis Voice Assistant</h4>
-        <span class="status live">Shipped</span>
-      </div>
-      <p>Where it started. A local voice assistant built on Whisper for speech recognition, Ollama for reasoning, and pyttsx3 for speech — my first working AI system.</p>
-    </div>
-
-    <div class="grid-card">
-      <div class="gc-top">
-        <h4>Multi-Agent Orchestrator</h4>
-        <span class="status live">In Progress</span>
-      </div>
-      <p>An autonomous agent pipeline using LangGraph and Model Context Protocol (MCP) to automate multi-step reasoning and domain-specific retrieval tasks.</p>
+<section class="section-pad">
+ <div class="door-wrap">
+  <div class="section-door left"></div><div class="section-door right"></div>
+  <div class="split-title"><h2>More<br>Builds</h2><span class="tag">SCENE 06</span></div>
+  <div class="bento-outer scene">
+    <div class="bento">
+      <div class="card-slot span-4 float" style="animation-delay:.05s"><div class="card grid-card" style="position:relative;"><span class="status live">Shipped</span><h4>Fake Review Detection</h4><p>NLP pipeline classifying authentic vs. deceptive product reviews — TF-IDF, sentiment analysis, supervised ML.</p><a class="view-btn" href="https://github.com/karthikeya5258044" target="_blank" rel="noopener">VIEW →</a></div></div>
+      <div class="card-slot span-4 float" style="animation-delay:.12s"><div class="card grid-card" style="position:relative;"><span class="status live">Shipped</span><h4>Traffic Chaser</h4><p>Traffic analysis and routing optimization — congestion detection and spatial pathing from real-time telemetry.</p><a class="view-btn" href="https://github.com/karthikeya5258044" target="_blank" rel="noopener">VIEW →</a></div></div>
+      <div class="card-slot span-4 float" style="animation-delay:.19s"><div class="card grid-card" style="position:relative;"><span class="status live">Shipped</span><h4>n8n Automation Pipelines</h4><p>Self-hosted agentic workflows connecting webhooks, LLM APIs, vector DBs, and notifications.</p><a class="view-btn" href="https://github.com/karthikeya5258044" target="_blank" rel="noopener">VIEW →</a></div></div>
+      <div class="card-slot span-4 float" style="animation-delay:.26s"><div class="card grid-card" style="position:relative;"><span class="status live">Shipped</span><h4>Karthikeya Agent</h4><p>Chrome extension answering questions about any webpage via local Ollama — TF-IDF retrieval, 100% local.</p><a class="view-btn" href="https://github.com/karthikeya5258044/karthikeya-agent" target="_blank" rel="noopener">VIEW →</a></div></div>
+      <div class="card-slot span-4 float" style="animation-delay:.33s"><div class="card grid-card" style="position:relative;"><span class="status live">Shipped</span><h4>Weather Dashboard</h4><p>Real-time forecasts from OpenWeatherMap — React + TS frontend, Node/Express backend, Dockerized.</p><a class="view-btn" href="https://github.com/karthikeya5258044/weather-dashboard" target="_blank" rel="noopener">VIEW →</a></div></div>
+      <div class="card-slot span-4 float" style="animation-delay:.4s"><div class="card grid-card" style="position:relative;"><span class="status live">Shipped</span><h4>Customer Churn Prediction</h4><p>Apriori + Decision Tree/Random Forest on 7,043 telecom records — ~80% accuracy.</p><a class="view-btn" href="https://github.com/karthikeya5258044/Customer-Churn-Prediction-Using-Data-Mining-Algorithms" target="_blank" rel="noopener">VIEW →</a></div></div>
+      <div class="card-slot span-4 float" style="animation-delay:.47s"><div class="card grid-card" style="position:relative; opacity:.8;"><span class="status paused">Paused</span><h4>Kubera / Trading Copilot</h4><p>Multi-model NSE stock prediction — XGBoost, Random Forest, KMeans. Paused on a HOLD-class imbalance problem.</p></div></div>
+      <div class="card-slot span-4 float" style="animation-delay:.54s"><div class="card grid-card" style="position:relative;"><span class="status live">Shipped</span><h4>Jarvis Voice Assistant</h4><p>Where it started — Whisper for speech recognition, Ollama for reasoning, pyttsx3 for speech.</p></div></div>
+      <div class="card-slot span-4 float" style="animation-delay:.61s"><div class="card card-accent grid-card" style="position:relative;"><span class="status live">In Progress</span><h4>Multi-Agent Orchestrator</h4><p>LangGraph + MCP pipeline automating multi-step reasoning and domain-specific retrieval.</p></div></div>
     </div>
   </div>
+ </div>
 </section>
 
-<!-- ================= WHAT'S NEXT (06) ================= -->
-<section id="whats-next" class="section-pad divider">
-  <div class="split-title reveal">
-    <h2>WHAT'S<br>NEXT</h2>
-    <span class="tag">06 / IN PROGRESS &amp; EXPLORING</span>
-  </div>
-  
-  <p class="whats-next-intro reveal">
-    Alongside KRAG, these are the two tracks currently taking shape — one research-driven, one built to solve a real problem I've watched teachers deal with firsthand.
-  </p>
-
-  <div class="grid-projects reveal">
-    <div class="grid-card">
-      <div>
-        <div class="gc-top">
-          <h4>Steganography via Deep Learning</h4>
-          <span class="status" style="color:#a855f7; border-color:#4c1d95;">RESEARCH · EARLY STAGE</span>
+<!-- ================= WHAT'S NEXT ================= -->
+<section id="whats-next" class="section-pad">
+ <div class="door-wrap">
+  <div class="section-door left"></div><div class="section-door right"></div>
+  <div class="split-title"><h2>What's<br>Next</h2><span class="tag">SCENE 07 · EXPLORING</span></div>
+  <div class="bento-outer scene">
+    <div class="bento">
+      <div class="card-slot span-6 float" style="animation-delay:.1s">
+        <div class="card" style="position:relative;">
+          <span class="status research">Research · Early Stage</span>
+          <h4 style="font-family:var(--display); font-weight:700; font-size:18px; text-transform:uppercase; max-width:85%;">Steganography via Deep Learning</h4>
+          <p style="color:var(--ink-dim); font-size:13px; line-height:1.75; margin-top:14px;">Exploring neural network-based steganography — embedding and recovering hidden information in images via learned, adaptive encoding/decoding networks, moving past classical LSB techniques. Currently in literature review and architecture design.</p>
+          <div class="tag-row"><span class="pill">Deep Learning</span><span class="pill">CNNs</span><span class="pill">Information Hiding</span></div>
         </div>
-        <p>A research project exploring neural network-based steganography — using deep learning models to embed and recover hidden information within images, moving past classical LSB techniques toward learned, adaptive encoding/decoding networks. Currently in the literature review and architecture design phase.</p>
       </div>
-      <div class="tag-row" style="margin-top:24px;">
-        <span class="pill">Deep Learning</span>
-        <span class="pill">CNNs</span>
-        <span class="pill">Information Hiding</span>
-      </div>
-    </div>
-
-    <div class="grid-card">
-      <div>
-        <div class="gc-top">
-          <h4>Student Recognition &amp; Records App</h4>
-          <span class="status" style="color:#38bdf8; border-color:#0369a1;">CONCEPT &amp; DESIGN</span>
+      <div class="card-slot span-6 float" style="animation-delay:.25s">
+        <div class="card" style="position:relative;">
+          <span class="status concept">Concept &amp; Design</span>
+          <h4 style="font-family:var(--display); font-weight:700; font-size:18px; text-transform:uppercase; max-width:85%;">Student Recognition &amp; Records App</h4>
+          <p style="color:var(--ink-dim); font-size:13px; line-height:1.75; margin-top:14px;">A tool for teachers: upload a student's photo, instantly retrieve attendance, grades, and academic history — face recognition matched against a records database.</p>
+          <div class="tag-row"><span class="pill">Face Recognition</span><span class="pill">Records DB</span><span class="pill">EdTech</span></div>
         </div>
-        <p>A tool for teachers: upload a student's photo and instantly retrieve their attendance, grades, and academic history — face recognition matched against a student records database, built to help educators quickly identify a student and understand how they're actually doing.</p>
-      </div>
-      <div class="tag-row" style="margin-top:24px;">
-        <span class="pill">Face Recognition</span>
-        <span class="pill">Student Records DB</span>
-        <span class="pill">EdTech</span>
       </div>
     </div>
   </div>
+ </div>
 </section>
 
 <footer>
@@ -1034,7 +604,7 @@
 </footer>
 
 <script>
-  // Clock Script
+  // Clock
   function updateClock() {
     const options = { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
     const timeString = new Intl.DateTimeFormat([], options).format(new Date());
@@ -1043,45 +613,102 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // Reveal Animations
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting) {
-        entry.target.classList.add('in');
-      }
-    });
-  }, { threshold: 0.1 });
-  reveals.forEach(r => observer.observe(r));
-
-  // Timeline Tab Switcher
+  // Timeline tab switcher
   function switchYear(yearId, btn) {
-    document.querySelectorAll('.timeline-card').forEach(card => card.classList.remove('active'));
+    document.querySelectorAll('.timeline-body').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(yearId).classList.add('active');
     btn.classList.add('active');
   }
 
-  // Accordion Logic
-  document.querySelectorAll('.acc-head').forEach(head => {
-    head.addEventListener('click', () => {
-      const item = head.parentElement;
-      const body = item.querySelector('.acc-body');
-      const isOpen = item.classList.contains('open');
-      
-      if(isOpen) {
-        body.style.maxHeight = null;
-        item.classList.remove('open');
-      } else {
-        body.style.maxHeight = body.scrollHeight + 'px';
-        item.classList.add('open');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  // 1) Card tilt — panels react to the cursor as if floating in 3D space
+  if (!reduceMotion && canHover) {
+    const cards = document.querySelectorAll('.card');
+    const MAX_TILT = 7;
+    const MAX_LIFT = 26;
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width;
+        const py = (e.clientY - rect.top) / rect.height;
+        const rotateX = (0.5 - py) * MAX_TILT;
+        const rotateY = (px - 0.5) * MAX_TILT;
+        card.style.transform = `translateZ(${MAX_LIFT}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateZ(0) rotateX(0) rotateY(0)';
+      });
+    });
+  }
+
+  // 2) Cursor spotlight — ambient light pooling at the pointer, reinforcing depth
+  if (!reduceMotion && canHover) {
+    const spotlight = document.getElementById('spotlight');
+    window.addEventListener('mousemove', (e) => {
+      spotlight.style.setProperty('--mx', e.clientX + 'px');
+      spotlight.style.setProperty('--my', e.clientY + 'px');
+    });
+  }
+
+  // 3) Magnetic buttons — CTAs pull gently toward the cursor within their radius
+  if (!reduceMotion && canHover) {
+    document.querySelectorAll('.magnetic').forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const relX = e.clientX - rect.left - rect.width / 2;
+        const relY = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = `translate(${relX * 0.25}px, ${relY * 0.35}px)`;
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = 'translate(0,0)';
+      });
+    });
+  }
+
+  // 4) Scroll-linked parallax — elements with data-depth drift at different rates
+  if (!reduceMotion) {
+    const depthEls = Array.from(document.querySelectorAll('[data-depth]'));
+    let ticking = false;
+    function applyParallax() {
+      const y = window.scrollY;
+      depthEls.forEach(el => {
+        const depth = parseFloat(el.getAttribute('data-depth')) || 0;
+        el.style.transform = `translateY(${y * depth * -0.15}px)`;
+      });
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(applyParallax); ticking = true; }
+    });
+  }
+
+  // 5) Glass doors — each section is covered by two panels that slide open
+  // sideways in 3D (like elevator/glass doors) the moment it scrolls into view.
+  const doorWraps = document.querySelectorAll('.door-wrap');
+  const doorIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('open');
+        doorIO.unobserve(entry.target);
       }
     });
-  });
-  // Set initial height for open accordion
-  document.querySelectorAll('.acc-item.open .acc-body').forEach(body => {
-    body.style.maxHeight = body.scrollHeight + 'px';
-  });
+  }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+  doorWraps.forEach(el => doorIO.observe(el));
+
+  // Reveal on scroll
+  const slots = document.querySelectorAll('.card-slot');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  slots.forEach(s => { s.style.animationPlayState = 'paused'; io.observe(s); });
 </script>
 </body>
 </html>
